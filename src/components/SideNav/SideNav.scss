@@ -1,0 +1,27 @@
+.sideBar {
+  background-color: red;
+  background-color: #ffffff;
+  border-right: #dfe3ed 2px solid;
+  display: grid;
+  grid-template-rows: repeat(10, 60px);
+
+  .active {
+    background-color: #5270eb;
+  }
+
+  div {
+    border-bottom: #dfe3ed 2px solid;
+    display: flex;
+    align-items: center;
+    -webkit-transition: background-color 20ms linear;
+    -moz-transition: background-color 20ms linear;
+    -o-transition: background-color 20ms linear;
+    -ms-transition: background-color 20ms linear;
+    transition: background-color 20ms linear;
+  }
+
+  div:not(.active):hover {
+    cursor: pointer;
+    background-color: #dfe3ed;
+  }
+}

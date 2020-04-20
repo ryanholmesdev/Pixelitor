@@ -9,3 +9,31 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+html,
+body {
+  height: 100vh;
+}
+
+#root {
+  height: 100vh;
+}
+
+.App {
+  height: 100vh;
+}
+
+.container {
+  position: relative;
+  background-color: orange;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 3% 73% 20%;
+  grid-template-rows: auto, auto, auto;
+  //grid-template-columns: repeat(3, 1fr);
+  //grid-template-rows: repeat(3, 1fr);
+}
+
+.mainContent {
+  background-color: #eef4f6;
+}
