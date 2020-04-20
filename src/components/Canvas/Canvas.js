@@ -26,9 +26,8 @@ export class Canvas extends Component {
     }
 
     var rect = this.canvasEle.current.getBoundingClientRect();
-    const canvas = this.canvasEle.current;
-    var x = e.pageX - canvas.offsetLeft;
-    var y = e.pageY - canvas.offsetTop;
+    var x = e.clientX - rect.left;
+    var y = e.clientY - rect.top;
 
     var radius = 10; // or whatever
     var fillColor = '#ff0000';
@@ -47,6 +46,8 @@ export class Canvas extends Component {
     const { x, y } = this.state;
     return (
       <canvas
+        height={200}
+        width={200}
         ref={this.canvasEle}
         onMouseDown={this.onMouseDown.bind(this)}
         onMouseUp={this.onMouseUp.bind(this)}
