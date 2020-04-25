@@ -1,60 +1,94 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Canvas.scss';
-export class Canvas extends Component {
-  constructor(props) {
-    super(props);
-    this.canvasEle = React.createRef();
-    this.isDrawing = false;
-    this.canvesContext = null;
-    this.state = { x: 0, y: 0 };
-  }
-  componentDidMount = () => {
-    this.canvesContext = this.canvasEle.current.getContext('2d');
+import Moveable from 'react-moveable';
+
+const Canvas = (props) => {
+  const [canvasWidth] = useState(500);
+  const [canvasHeight] = useState(600);
+  const [canvasEle] = useState(React.createRef());
+  const [canvasContext, setCanvasContext] = useState(null);
+  const [target, setTarget] = React.useState();
+  const [frame] = React.useState({
+    translate: [0, 0],
+    width: 100,
+    height: 100,
+  });
+
+  let isDrawing = false;
+
+  useEffect(() => {
+    setCanvasContext(canvasEle.current.getContext('2d'));
+    setTarget(canvasEle.current);
+  }, [canvasEle]);
+
+  const onMouseDown = () => {
+    isDrawing = true;
   };
 
-  onMouseDown = () => {
-    this.isDrawing = true;
-  };
-
-  onMouseUp = () => {
-    this.isDrawing = false;
-  };
-
-  onMouseMove = (e) => {
-    if (!this.isDrawing) {
+  const onMouseMove = (e) => {
+    if (!isDrawing || isAllowedToDraw() === false) {
       return;
     }
-
-    var rect = this.canvasEle.current.getBoundingClientRect();
-    var x = e.clientX - rect.left;
-    var y = e.clientY - rect.top;
-
-    var radius = 10; // or whatever
-    var fillColor = '#ff0000';
-    this.fillCircle(x, y, radius, fillColor);
+    const rect = canvasEle.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const radius = props.brushSize;
+    const fillColor = props.color;
+    fillCircle(x, y, radius, fillColor);
   };
 
-  fillCircle = (x, y, radius, fillColor) => {
-    this.canvesContext.fillStyle = fillColor;
-    this.canvesContext.beginPath();
-    this.canvesContext.moveTo(x, y);
-    this.canvesContext.arc(x, y, radius, 0, Math.PI * 2, false);
-    this.canvesContext.fill();
+  const onMouseUp = () => {
+    isDrawing = false;
   };
 
-  render() {
-    const { x, y } = this.state;
-    return (
+  const isAllowedToDraw = () => {
+    return props.activeToolName === 'Pen Tool' ? true : false;
+  };
+
+  const fillCircle = (x, y, radius, fillColor) => {
+    canvasContext.fillStyle = fillColor;
+    canvasContext.beginPath();
+    canvasContext.moveTo(x, y);
+    canvasContext.arc(x, y, radius, 0, Math.PI * 2, false);
+    canvasContext.fill();
+  };
+
+  return (
+    <div className="page-wrapper">
       <canvas
-        height={200}
-        width={200}
-        ref={this.canvasEle}
-        onMouseDown={this.onMouseDown.bind(this)}
-        onMouseUp={this.onMouseUp.bind(this)}
-        onMouseMove={this.onMouseMove.bind(this)}
+        className="canvas"
+        width={canvasWidth}
+        height={canvasHeight}
+        ref={canvasEle}
+        onMouseDown={onMouseDown.bind(this)}
+        onMouseUp={onMouseUp.bind(this)}
+        onMouseMove={onMouseMove.bind(this)}
       ></canvas>
-    );
-  }
-}
+
+      <Moveable
+        target={target}
+        resizable={true}
+        keepRatio={false}
+        throttleResize={0}
+        renderDirections={['nw', 'n', 'ne', 'w', 'e', 'sw', 's', 'se']}
+        edge={false}
+        zoom={1}
+        origin={true}
+        onResizeStart={({ setOrigin, dragStart }) => {
+          setOrigin(['%', '%']);
+          dragStart && dragStart.set(frame.translate);
+        }}
+        onResize={({ target, width, height, drag }) => {
+          const beforeTranslate = drag.beforeTranslate;
+
+          frame.translate = beforeTranslate;
+          target.style.width = `${width}px`;
+          target.style.height = `${height}px`;
+          target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px)`;
+        }}
+      />
+    </div>
+  );
+};
 
 export default Canvas;

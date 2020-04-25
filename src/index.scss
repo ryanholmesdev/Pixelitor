@@ -26,14 +26,15 @@ body {
 .container {
   position: relative;
   background-color: orange;
-  height: 100vh;
+  height: 100%;
   display: grid;
-  grid-template-columns: 3% 73% 20%;
+  grid-template-columns: 55px auto 400px;
   grid-template-rows: auto, auto, auto;
   //grid-template-columns: repeat(3, 1fr);
   //grid-template-rows: repeat(3, 1fr);
 }
 
-.mainContent {
+.main-content {
+  padding: 1em;
   background-color: #eef4f6;
 }

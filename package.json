@@ -15,6 +15,7 @@
     "react-color": "^2.18.0",
     "react-dom": "^16.13.1",
     "react-icons": "^3.9.0",
+    "react-moveable": "^0.19.2",
     "react-scripts": "3.4.1"
   },
   "scripts": {

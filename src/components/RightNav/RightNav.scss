@@ -7,14 +7,44 @@
   .setting {
     position: relative;
     display: block;
-    width: 100%;
     border-top: #dfe3ed 2px solid;
     border-bottom: #dfe3ed 2px solid;
     margin-top: 10px;
     padding: 1em;
 
     input {
-      width: 100%;
+      //width: 100%;
+    }
+
+    .layers-container {
+      display: grid;
+      grid-template-columns: 30px 260px;
+      border: #d4d9e6 1px solid;
+      height: 50px;
+      z-index: 100;
+    }
+    .layers-container:hover {
+      //cursor: move;
+    }
+    .layers-container.active {
+      background-color: #eef4f6;
     }
   }
+}
+
+.drag-enter {
+  border-bottom: red 2px solid !important;
+}
+
+.prevent-pointer * {
+  pointer-events: none;
+}
+
+.layer-options div {
+  display: inline-block;
+}
+
+.layers-container-main {
+  max-height: 250px;
+  overflow: scroll;
 }

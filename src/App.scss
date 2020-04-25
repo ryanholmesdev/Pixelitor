@@ -1,5 +1,11 @@
 @import '../node_modules/normalize.css/normalize.css';
 
+.hide {
+  display: none;
+}
+* {
+  z-index: inherit;
+}
 input[type='range'] {
   -webkit-appearance: none;
   width: 100%;
