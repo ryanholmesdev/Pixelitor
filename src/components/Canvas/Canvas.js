@@ -15,6 +15,10 @@ const Canvas = (props) => {
   });
 
   let isDrawing = false;
+  const minCanvasWidth = 20;
+  const minCanvasHeight = 20;
+  const maxCanvasWidth = 700;
+  const maxCanvasHeight = 700;
 
   useEffect(() => {
     setCanvasContext(canvasEle.current.getContext('2d'));
@@ -66,24 +70,37 @@ const Canvas = (props) => {
       ></canvas>
 
       <Moveable
+        className={`moveable-canvas-container ${props.activeToolName !== 'Select Tool' ? 'not-active' : ''}`}
         target={target}
-        resizable={true}
+        resizable={props.activeToolName === 'Select Tool' ? true : false}
         keepRatio={false}
         throttleResize={0}
         renderDirections={['nw', 'n', 'ne', 'w', 'e', 'sw', 's', 'se']}
         edge={false}
         zoom={1}
-        origin={true}
+        origin={false}
+        draggable={props.activeToolName === 'Select Tool' ? true : false}
         onResizeStart={({ setOrigin, dragStart }) => {
           setOrigin(['%', '%']);
           dragStart && dragStart.set(frame.translate);
         }}
         onResize={({ target, width, height, drag }) => {
-          const beforeTranslate = drag.beforeTranslate;
+          width = width >= maxCanvasWidth ? maxCanvasWidth : width;
+          width = width <= minCanvasWidth ? minCanvasWidth : width;
+          height = height >= maxCanvasHeight ? maxCanvasHeight : height;
+          height = height <= minCanvasHeight ? minCanvasHeight : height;
 
+          const beforeTranslate = drag.beforeTranslate;
           frame.translate = beforeTranslate;
           target.style.width = `${width}px`;
           target.style.height = `${height}px`;
+          target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px)`;
+        }}
+        onDragStart={({ set }) => {
+          set(frame.translate);
+        }}
+        onDrag={({ target, beforeTranslate }) => {
+          frame.translate = beforeTranslate;
           target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px)`;
         }}
       />

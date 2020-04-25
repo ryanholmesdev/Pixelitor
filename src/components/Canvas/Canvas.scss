@@ -1,13 +1,21 @@
 .page-wrapper {
   height: 100%;
 }
-
 canvas {
   background-color: #ffffff;
 }
-
-.test {
-  background-color: red;
-  width: 400px;
-  height: 200px;
+// Moveable overides
+.moveable-control-box {
+  .moveable-control,
+  .moveable-line {
+    background-color: #5270eb !important;
+  }
 }
+
+.moveable-control-box.not-active {
+  .moveable-line {
+    background-color: transparent !important;
+  }
+}
+
+// end of moveable overides
