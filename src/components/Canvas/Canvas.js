@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './Canvas.scss';
 import Moveable from 'react-moveable';
+import { layerHistory } from '../../data/Layers';
 
 const Canvas = (props) => {
-  const [canvasWidth] = useState(500);
-  const [canvasHeight] = useState(600);
+  const [canvasWidth, setCanvasWidth] = useState(500);
+  const [canvasHeight, setCanvasHeight] = useState(600);
   const [canvasEle] = useState(React.createRef());
+  const [canvasWrapperEle] = useState(React.createRef());
   const [canvasContext, setCanvasContext] = useState(null);
   const [target, setTarget] = React.useState();
   const [frame] = React.useState({
@@ -13,6 +15,7 @@ const Canvas = (props) => {
     width: 100,
     height: 100,
   });
+  const [isResizing, setIsReszing] = React.useState(false);
 
   let isDrawing = false;
   const minCanvasWidth = 20;
@@ -22,8 +25,8 @@ const Canvas = (props) => {
 
   useEffect(() => {
     setCanvasContext(canvasEle.current.getContext('2d'));
-    setTarget(canvasEle.current);
-  }, [canvasEle]);
+    setTarget(canvasWrapperEle.current);
+  }, [canvasEle, canvasWrapperEle]);
 
   const onMouseDown = () => {
     isDrawing = true;
@@ -43,6 +46,13 @@ const Canvas = (props) => {
 
   const onMouseUp = () => {
     isDrawing = false;
+    // save the history of this draw.
+    const activeLayerIndex = props.layers.findIndex((l) => l.isSelected === true);
+    let newLayers = props.layers;
+    let id = newLayers[activeLayerIndex].layerHistory.length;
+    const canvasData = canvasEle.current.toDataURL();
+    newLayers[activeLayerIndex].layerHistory.push(new layerHistory(id, 'draw', canvasData));
+    props.updateLayers(newLayers);
   };
 
   const isAllowedToDraw = () => {
@@ -57,17 +67,35 @@ const Canvas = (props) => {
     canvasContext.fill();
   };
 
+  const reDrawCanvas = () => {
+    const layersHistoryLength = props.layers[0].layerHistory.length;
+    if (layersHistoryLength > 0) {
+      const data = props.layers[0].layerHistory[layersHistoryLength - 1];
+      var image = new Image();
+      image.onload = function () {
+        canvasContext.drawImage(image, 0, 0);
+      };
+      image.src = data.canvasData;
+    }
+  };
+
   return (
     <div className="page-wrapper">
-      <canvas
-        className="canvas"
-        width={canvasWidth}
-        height={canvasHeight}
-        ref={canvasEle}
-        onMouseDown={onMouseDown.bind(this)}
-        onMouseUp={onMouseUp.bind(this)}
-        onMouseMove={onMouseMove.bind(this)}
-      ></canvas>
+      <div
+        className="canvas-wrapper"
+        ref={canvasWrapperEle}
+        style={{ width: `${canvasWidth}px`, height: `${canvasHeight}px` }}
+      >
+        <canvas
+          className={`${isResizing === true ? 'resizing-active' : ''}`}
+          width={canvasWidth}
+          height={canvasHeight}
+          ref={canvasEle}
+          onMouseDown={onMouseDown.bind(this)}
+          onMouseUp={onMouseUp.bind(this)}
+          onMouseMove={onMouseMove.bind(this)}
+        ></canvas>
+      </div>
 
       <Moveable
         className={`moveable-canvas-container ${props.activeToolName !== 'Select Tool' ? 'not-active' : ''}`}
@@ -83,6 +111,7 @@ const Canvas = (props) => {
         onResizeStart={({ setOrigin, dragStart }) => {
           setOrigin(['%', '%']);
           dragStart && dragStart.set(frame.translate);
+          setIsReszing(true);
         }}
         onResize={({ target, width, height, drag }) => {
           width = width >= maxCanvasWidth ? maxCanvasWidth : width;
@@ -95,6 +124,26 @@ const Canvas = (props) => {
           target.style.width = `${width}px`;
           target.style.height = `${height}px`;
           target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px)`;
+        }}
+        onResizeEnd={({ target }) => {
+          /*
+            Need to actually set the canvas width and height properties and remove the values
+            from the inline styling. This is done on rezise end because the canvas 
+            has to be re drawn once the width and height has changed.
+          */
+
+          // get the width and height from inline styling.
+          const width = parseFloat(target.style.width.replace('px', ''));
+          const height = parseFloat(target.style.height.replace('px', ''));
+
+          // We need to actually set the canvas width and height properties and remove the inline stying.
+          setCanvasWidth(width);
+          setCanvasHeight(height);
+
+          // remove inline style no longer need.
+          // lastly redraw canvas
+          reDrawCanvas();
+          setIsReszing(false);
         }}
         onDragStart={({ set }) => {
           set(frame.translate);

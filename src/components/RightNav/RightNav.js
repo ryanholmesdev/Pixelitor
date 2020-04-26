@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SketchPicker } from 'react-color';
 import './RightNav.scss';
 import { FiEye, FiChevronsUp, FiChevronsDown, FiFile } from 'react-icons/fi';
-
+import { layer } from '../../data/Layers';
 const RightNav = (state) => {
   const [selectedIndex, setselectedIndex] = useState(0);
   const [draggingIndex, setDraggingIndex] = useState(null);
@@ -81,12 +81,7 @@ const RightNav = (state) => {
   const addNewLayer = () => {
     let newArray = state.layers;
     const id = newArray.length + 1;
-    const newLayer = {
-      id: id,
-      name: `Layer ${id}`,
-      isSelected: true,
-      isVisible: true,
-    };
+    const newLayer = new layer(id);
     newArray[selectedIndex].isSelected = false;
     newArray.splice(selectedIndex, 0, newLayer);
     state.updateLayers(newArray);

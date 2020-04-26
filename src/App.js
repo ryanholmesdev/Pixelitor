@@ -6,7 +6,7 @@ import RightNav from './components/RightNav/RightNav';
 
 import tools from './data/Tools';
 import settings from './data/ActiveSettings';
-import layers from './data/Layers';
+import { layers } from './data/Layers';
 import Canvas from './components/Canvas/Canvas';
 export default class App extends Component {
   constructor(props) {
@@ -68,6 +68,8 @@ export default class App extends Component {
               brushSize={this.state.settings.brushSize}
               color={this.state.settings.activeColor}
               activeToolName={this.state.activeToolName}
+              layers={this.state.layers}
+              updateLayers={this.updateLayer}
             ></Canvas>
           </div>
 
