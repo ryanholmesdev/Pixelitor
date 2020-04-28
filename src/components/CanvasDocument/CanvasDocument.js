@@ -21,8 +21,6 @@ const CanvasDocument = (props) => {
   const maxCanvasWidth = 700;
   const maxCanvasHeight = 700;
 
-  const reversedLayers = [...props.layers].reverse();
-
   useEffect(() => {
     setTarget(canvasWrapperEle.current);
   }, [canvasWrapperEle]);
@@ -41,14 +39,16 @@ const CanvasDocument = (props) => {
         className={`canvas-wrapper ${isResizing === 'Select Tool' ? 'resizing-active' : ''}`}
         style={{ width: `${canvasWidth}px`, height: `${canvasHeight}px` }}
       >
-        {reversedLayers.map((layer, index) => {
+        {props.layers.map((layer, index) => {
           return (
             <Canvas
               key={layer.id}
               canvasWidth={canvasWidth}
               canvasHeight={canvasHeight}
               layer={layer}
-              allowedToDraw={isAllowedToDraw === true && layer.isSelected === true ? true : false}
+              allowedToDraw={
+                isAllowedToDraw === true && layer.isVisible === true && layer.isSelected === true ? true : false
+              }
               brushSize={props.brushSize}
               brushColor={props.color}
             ></Canvas>
