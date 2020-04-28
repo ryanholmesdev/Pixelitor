@@ -2,3 +2,7 @@ canvas {
   position: absolute;
   background: transparent;
 }
+
+.disable-pointer-events {
+  pointer-events: none;
+}

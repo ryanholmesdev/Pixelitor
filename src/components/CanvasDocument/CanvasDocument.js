@@ -43,6 +43,7 @@ const CanvasDocument = (props) => {
           return (
             <Canvas
               key={layer.id}
+              index={index}
               canvasWidth={canvasWidth}
               canvasHeight={canvasHeight}
               layer={layer}

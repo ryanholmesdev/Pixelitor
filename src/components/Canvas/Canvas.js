@@ -60,8 +60,10 @@ const Canvas = (props) => {
   return (
     <canvas
       ref={canvasEle}
-      style={{ zIndex: props.layer.id + 1 }}
-      className={`${props.layer.isVisible === false ? 'hide' : 'test'}`}
+      style={{ zIndex: `-${props.index + 1}` }}
+      className={`${props.layer.name} ${props.layer.isVisible === false ? 'hide' : ''} ${
+        props.layer.isSelected === false ? 'disable-pointer-events' : ''
+      }`}
       width={props.canvasWidth}
       height={props.canvasHeight}
       onMouseDown={props.allowedToDraw === true ? onMouseDown : undefined}
