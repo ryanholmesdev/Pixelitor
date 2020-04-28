@@ -3,8 +3,9 @@ import { SketchPicker } from 'react-color';
 import './RightNav.scss';
 import { FiEye, FiChevronsUp, FiChevronsDown, FiFile } from 'react-icons/fi';
 import { layer } from '../../data/Layers';
+
 const RightNav = (state) => {
-  const [selectedIndex, setselectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [draggingIndex, setDraggingIndex] = useState(null);
 
   const onLayerVisabilityClick = (layer) => {
@@ -14,15 +15,15 @@ const RightNav = (state) => {
   };
   const onLayerSelectClick = (layer) => {
     if (layer.isSelected === false) {
-      state.layers.forEach((l, i) => {
-        if (l.id === layer.id) {
-          l.isSelected = !l.isSelected;
-          setselectedIndex(i);
-        } else {
-          l.isSelected = false;
-        }
-      });
-      state.updateLayers(state.layers);
+      let newArray = state.layers;
+      newArray[selectedIndex].isSelected = false;
+
+      const indexToUpdate = newArray.findIndex((l) => l.id === layer.id);
+      newArray[indexToUpdate].isSelected = true;
+
+      setSelectedIndex(indexToUpdate);
+
+      state.updateLayers(newArray);
     }
   };
 
@@ -80,11 +81,49 @@ const RightNav = (state) => {
 
   const addNewLayer = () => {
     let newArray = state.layers;
-    const id = newArray.length + 1;
+    const id = newArray.length;
     const newLayer = new layer(id);
     newArray[selectedIndex].isSelected = false;
     newArray.splice(selectedIndex, 0, newLayer);
+    for (var i = newArray.length - 1; i >= 0; i--) {
+      newArray[i].order = i;
+    }
     state.updateLayers(newArray);
+    setSelectedIndex(selectedIndex);
+  };
+
+  const upLayer = () => {
+    const targetIndex = selectedIndex - 1;
+    let layers = state.layers;
+    const targetOrder = layers[targetIndex].order;
+    const selectedOrder = layers[selectedIndex].order;
+    layers[targetIndex].order = selectedOrder;
+    layers[selectedOrder].order = targetOrder;
+    const orderedLayers = moveItemInArray(layers, selectedIndex, targetIndex);
+    state.updateLayers(orderedLayers);
+    setSelectedIndex(targetIndex);
+  };
+
+  const downLayer = () => {
+    const targetIndex = selectedIndex + 1;
+    let layers = state.layers;
+    const targetOrder = layers[targetIndex].order;
+    const selectedOrder = layers[selectedIndex].order;
+    layers[targetIndex].order = selectedOrder;
+    layers[selectedOrder].order = targetOrder;
+    const orderedLayers = moveItemInArray(layers, selectedIndex, targetIndex);
+    state.updateLayers(orderedLayers);
+    setSelectedIndex(targetIndex);
+  };
+
+  // moves object in array from 1 place to another, validate before calling.
+  const moveItemInArray = (array, from, to) => {
+    // remove `from` item and store it
+    var fromItem = array.splice(from, 1)[0];
+    // insert stored item into position `to`
+    array.splice(to, 0, fromItem);
+
+    return array;
   };
 
   return (
@@ -110,8 +149,12 @@ const RightNav = (state) => {
         </div>
         <div className="setting">
           <div className="layer-options">
-            <div>{<FiChevronsUp color="7b8fa3" size="20px" style={{ margin: 'auto' }} />}</div>
-            <div>{<FiChevronsDown color="7b8fa3" size="20px" style={{ margin: 'auto' }} />}</div>
+            <div className={`${selectedIndex === 0 ? 'hide' : ''}`}>
+              {<FiChevronsUp color="7b8fa3" size="20px" style={{ margin: 'auto' }} onClick={upLayer} />}
+            </div>
+            <div className={`${state.layers.length === 1 || selectedIndex + 1 === state.layers.length ? 'hide' : ''}`}>
+              {<FiChevronsDown color="7b8fa3" size="20px" style={{ margin: 'auto' }} onClick={downLayer} />}
+            </div>
             <div onClick={addNewLayer}>{<FiFile color="7b8fa3" size="20px" style={{ margin: 'auto' }} />}</div>
           </div>
           <div className="layers-container-main">
@@ -119,7 +162,7 @@ const RightNav = (state) => {
               return (
                 <div
                   className={`layers-container ${layer.isSelected ? 'active' : ''} 
-                ${draggingIndex !== null ? 'prevent-pointer' : ''} }`}
+                ${draggingIndex !== null ? 'prevent-pointer' : ''}`}
                   key={layer.id}
                   draggable="true"
                   onDragStart={() => onDragStart(index)}

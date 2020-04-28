@@ -39,11 +39,10 @@ const CanvasDocument = (props) => {
         className={`canvas-wrapper ${isResizing === 'Select Tool' ? 'resizing-active' : ''}`}
         style={{ width: `${canvasWidth}px`, height: `${canvasHeight}px` }}
       >
-        {props.layers.map((layer, index) => {
+        {props.layers.map((layer) => {
           return (
             <Canvas
               key={layer.id}
-              index={index}
               canvasWidth={canvasWidth}
               canvasHeight={canvasHeight}
               layer={layer}

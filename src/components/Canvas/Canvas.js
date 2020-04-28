@@ -60,7 +60,7 @@ const Canvas = (props) => {
   return (
     <canvas
       ref={canvasEle}
-      style={{ zIndex: `-${props.index + 1}` }}
+      style={{ zIndex: `-${props.layer.order}` }}
       className={`${props.layer.name} ${props.layer.isVisible === false ? 'hide' : ''} ${
         props.layer.isSelected === false ? 'disable-pointer-events' : ''
       }`}
