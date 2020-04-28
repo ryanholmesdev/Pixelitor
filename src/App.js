@@ -7,7 +7,7 @@ import RightNav from './components/RightNav/RightNav';
 import tools from './data/Tools';
 import settings from './data/ActiveSettings';
 import { layers } from './data/Layers';
-import Canvas from './components/Canvas/Canvas';
+import CanvasDocument from './components/CanvasDocument/CanvasDocument';
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -64,13 +64,13 @@ export default class App extends Component {
           <SideNav tools={this.state.tools} setActive={this.setActiveTool}></SideNav>
 
           <div className="main-content">
-            <Canvas
+            <CanvasDocument
               brushSize={this.state.settings.brushSize}
               color={this.state.settings.activeColor}
               activeToolName={this.state.activeToolName}
               layers={this.state.layers}
               updateLayers={this.updateLayer}
-            ></Canvas>
+            ></CanvasDocument>
           </div>
 
           <RightNav
