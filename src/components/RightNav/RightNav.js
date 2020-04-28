@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SketchPicker } from 'react-color';
 import './RightNav.scss';
-import { FiEye, FiChevronsUp, FiChevronsDown, FiFile } from 'react-icons/fi';
+import { FiEye, FiEyeOff, FiChevronsUp, FiChevronsDown, FiFile } from 'react-icons/fi';
 import { layer } from '../../data/Layers';
 
 const RightNav = (state) => {
@@ -173,7 +173,8 @@ const RightNav = (state) => {
                   onDragEnd={onDragEnd}
                 >
                   <div className="icon" onClick={() => onLayerVisabilityClick(layer)}>
-                    {<FiEye color={!layer.isVisible ? '#788ca1' : '#3153e5'} size="20px" style={{ margin: 'auto' }} />}
+                    {layer.isVisible === true && <FiEye color="#3153e5" size="20px" style={{ margin: 'auto' }} />}
+                    {layer.isVisible === false && <FiEyeOff color="#788ca1" size="20px" style={{ margin: 'auto' }} />}
                   </div>
                   <div className="layer-name" onClick={() => onLayerSelectClick(layer)}>
                     {layer.name}
