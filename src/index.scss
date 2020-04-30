@@ -25,8 +25,7 @@ body {
 
 .container {
   position: relative;
-  background-color: orange;
-  height: 100%;
+  height: calc(100vh - 70px);
   display: grid;
   grid-template-columns: 55px auto 400px;
   grid-template-rows: auto, auto, auto;
@@ -35,6 +34,8 @@ body {
 }
 
 .main-content {
-  padding: 1em;
+  position: relative;
+  padding: 20px;
   background-color: #eef4f6;
+  overflow-x: scroll;
 }
