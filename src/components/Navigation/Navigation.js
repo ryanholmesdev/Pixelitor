@@ -15,7 +15,9 @@ const Navigation = () => {
           </div>
         </div>
       </div>
-      <div></div>
+      <div>
+        <button>Login</button>
+      </div>
     </nav>
   );
 };

@@ -1,0 +1,37 @@
+h3 {
+  margin-top: 0;
+}
+.layer-options {
+  margin-bottom: 10px;
+  .icon {
+    color: #7b8fa3;
+  }
+  button {
+    outline: none;
+    border: 0;
+    background: none;
+    display: inline-block;
+    padding: 0;
+  }
+  .icon {
+    color: #7b8fa3;
+  }
+  button:enabled:hover {
+    cursor: pointer;
+  }
+  button:enabled:hover .icon {
+    color: #5270eb;
+  }
+  button:disabled .icon {
+    color: red;
+  }
+}
+.layers-list {
+  margin-bottom: 15px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.range-container label {
+  display: block;
+}

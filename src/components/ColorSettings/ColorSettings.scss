@@ -1,0 +1,44 @@
+.color-section {
+  display: grid !important;
+  grid-template-columns: 1fr 4fr;
+  grid-template-rows: 1fr;
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  .active-color {
+    width: 80%;
+    height: 0;
+    padding-bottom: 80%;
+    background-color: blue;
+    .active-color-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  .color-satchets {
+    position: relative;
+    max-height: 80px;
+    min-height: 80px;
+    overflow-y: auto;
+    border: #dfe3ed 2px solid;
+    border-radius: 3px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    grid-auto-rows: auto;
+    .color {
+      display: inline-block;
+      width: 29px;
+      height: 29px;
+      margin: 0.2em;
+      cursor: pointer;
+    }
+  }
+  .color-tools {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    margin-top: 10px;
+  }
+}

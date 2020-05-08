@@ -7,28 +7,8 @@
   .setting {
     position: relative;
     display: block;
-    border-top: #dfe3ed 2px solid;
     border-bottom: #dfe3ed 2px solid;
-    margin-top: 10px;
     padding: 1em;
-
-    input {
-      //width: 100%;
-    }
-
-    .layers-container {
-      display: grid;
-      grid-template-columns: 30px 260px;
-      border: #d4d9e6 1px solid;
-      height: 50px;
-      z-index: 100;
-    }
-    .layers-container:hover {
-      //cursor: move;
-    }
-    .layers-container.active {
-      background-color: #eef4f6;
-    }
   }
 }
 
@@ -44,7 +24,21 @@
   display: inline-block;
 }
 
-.layers-container-main {
-  max-height: 250px;
-  overflow: scroll;
+.properties {
+  display: grid !important;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  grid-column-gap: 40px;
+  grid-row-gap: 20px;
+  input,
+  label {
+    display: block;
+  }
+  input {
+    width: 100%;
+  }
+  label {
+    padding-bottom: 10px;
+  }
 }

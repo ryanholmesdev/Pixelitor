@@ -36,7 +36,7 @@ export default class App extends Component {
   };
   handleColorChange = (newColor) => {
     let settings = this.state.settings;
-    settings.activeColor = newColor.hex;
+    settings.color = newColor;
     this.setState({
       settings: settings,
     });
@@ -56,6 +56,18 @@ export default class App extends Component {
     });
   };
 
+  onCanvasSizeChange = (value, widthOrHeight) => {
+    let settings = this.state.settings;
+    if (widthOrHeight === 'width') {
+      settings.width = parseFloat(value);
+    } else if (widthOrHeight === 'height') {
+      settings.height = parseFloat(value);
+    }
+    this.setState({
+      settings: settings,
+    });
+  };
+
   render() {
     return (
       <div className="App">
@@ -65,8 +77,7 @@ export default class App extends Component {
 
           <div className="main-content">
             <CanvasDocument
-              brushSize={this.state.settings.brushSize}
-              color={this.state.settings.activeColor}
+              settings={this.state.settings}
               activeToolName={this.state.activeToolName}
               layers={this.state.layers}
               updateLayers={this.updateLayer}
@@ -74,9 +85,9 @@ export default class App extends Component {
           </div>
 
           <RightNav
-            color={this.state.settings.activeColor}
+            {...this.state.settings}
+            onCanvasSizeChange={this.onCanvasSizeChange}
             onColorChange={this.handleColorChange}
-            brushSize={this.state.settings.brushSize}
             onBrushSizeChange={this.brushChange}
             layers={this.state.layers}
             updateLayers={this.updateLayer}

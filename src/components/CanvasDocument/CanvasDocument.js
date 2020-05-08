@@ -4,8 +4,12 @@ import Moveable from 'react-moveable';
 import Canvas from '../Canvas/Canvas';
 
 const CanvasDocument = (props) => {
-  const [canvasWidth, setCanvasWidth] = useState(500);
-  const [canvasHeight, setCanvasHeight] = useState(600);
+  const { settings, activeToolName } = props;
+  const { minCanvasWidth, minCanvasHeight, maxCanvasWidth, maxCanvasHeight, color, brushSize } = settings;
+
+  const [canvasWidth, setCanvasWidth] = useState(settings.canvasWidth);
+  const [canvasHeight, setCanvasHeight] = useState(settings.canvasHeight);
+
   const [canvasWrapperEle] = useState(React.createRef());
   const pageWrapperEle = useRef(null);
   const [moveableBounds, setMoveableBounds] = useState(null);
@@ -21,25 +25,18 @@ const CanvasDocument = (props) => {
   const [isResizing, setIsReszing] = React.useState(false);
   const [isAllowedToDraw, setIsAllowedToDraw] = useState(false);
 
-  const minCanvasWidth = 20;
-  const minCanvasHeight = 20;
-  const maxCanvasWidth = 1200;
-  const maxCanvasHeight = 1200;
-
   useEffect(() => {
     setTarget(canvasWrapperEle.current);
   }, [canvasWrapperEle]);
 
   const setIsUserAllowedToDraw = () => {
-    const isAllowed = props.activeToolName === 'Pen Tool' ? true : false;
+    const isAllowed = activeToolName === 'Pen Tool' ? true : false;
     setIsAllowedToDraw(isAllowed);
   };
 
-  useEffect(setIsUserAllowedToDraw, [props.activeToolName]);
+  useEffect(setIsUserAllowedToDraw, [activeToolName]);
   useEffect(() => {
-    console.log('on load', pageWrapperEle.current);
-    const bounds = getMoveableBound();
-    setMoveableBounds(bounds);
+    setMoveableBounds(getMoveableBound());
   }, []);
 
   const getMoveableBound = () => {
@@ -69,17 +66,17 @@ const CanvasDocument = (props) => {
               allowedToDraw={
                 isAllowedToDraw === true && layer.isVisible === true && layer.isSelected === true ? true : false
               }
-              brushSize={props.brushSize}
-              brushColor={props.color}
+              brushSize={brushSize}
+              color={color}
             ></Canvas>
           );
         })}
       </div>
 
       <Moveable
-        className={`moveable-canvas-container ${props.activeToolName !== 'Select Tool' ? 'not-active' : ''}`}
+        className={`moveable-canvas-container ${activeToolName !== 'Select Tool' ? 'not-active' : ''}`}
         target={target}
-        resizable={props.activeToolName === 'Select Tool' ? true : false}
+        resizable={activeToolName === 'Select Tool' ? true : false}
         keepRatio={false}
         throttleResize={0}
         throttleDrag={1}
@@ -89,7 +86,7 @@ const CanvasDocument = (props) => {
         origin={false}
         snappable={true}
         bounds={moveableBounds}
-        draggable={props.activeToolName === 'Select Tool' ? true : false}
+        draggable={activeToolName === 'Select Tool' ? true : false}
         onResizeStart={({ setOrigin, dragStart }) => {
           setOrigin(['%', '%']);
           dragStart && dragStart.set(frame.translate);

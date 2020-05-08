@@ -29,7 +29,7 @@ const Canvas = (props) => {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const radius = props.brushSize;
-    const fillColor = props.brushColor;
+    const fillColor = props.color;
     fillCircle(x, y, radius, fillColor, canvas);
   };
 

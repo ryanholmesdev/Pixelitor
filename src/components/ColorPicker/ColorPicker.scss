@@ -1,0 +1,22 @@
+.pop-up {
+  position: fixed;
+  width: 400px;
+  height: 238px;
+  margin-top: 0px;
+  margin-left: -450px;
+  background-color: #f3f3f3;
+  border-radius: 6px;
+  box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.4);
+  display: none;
+  &:before {
+    content: '';
+    position: absolute;
+    right: -14px;
+    top: 28px;
+    border-style: solid;
+    border-left: solid white 10px;
+    border-left: solid white 10px;
+    border-top: solid transparent 8px;
+    border-bottom: solid transparent 8px;
+  }
+}
