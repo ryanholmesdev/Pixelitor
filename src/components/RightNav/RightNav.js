@@ -76,7 +76,6 @@ const RightNav = (props) => {
         <div className="setting">
           <ColorSettings color={color} updateColor={props.onColorChange} />
         </div>
-
         <div className="setting range-container">
           <h3>Brush Size</h3>
           <input
