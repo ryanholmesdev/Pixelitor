@@ -8,6 +8,14 @@ export const ColorSettings = (props) => {
   const [colors, setColors] = useState(Colors);
   const [isColorOptionVisable, setIsColorOptionVisable] = useState(false);
 
+  const addSelectedColorToSachet = () => {
+    const color = {
+      id: colors.length,
+      value: props.color,
+    };
+    setColors([...colors, color]);
+  };
+
   return (
     <div>
       <ColorPicker
@@ -40,7 +48,9 @@ export const ColorSettings = (props) => {
       </div>
       <div className="color-tools">
         <div className="icons">
-          <button title="add">{<FiFile className="icon" size="25px" style={{ margin: 'auto' }} />}</button>
+          <button onClick={addSelectedColorToSachet}>
+            {<FiFile className="icon" size="25px" style={{ margin: 'auto' }} />}
+          </button>
           <button>{<FiTrash className="icon" size="25px" style={{ margin: 'auto' }} />}</button>
         </div>
       </div>
