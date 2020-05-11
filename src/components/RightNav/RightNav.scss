@@ -12,14 +12,6 @@
   }
 }
 
-.drag-enter {
-  border-bottom: red 2px solid !important;
-}
-
-.prevent-pointer * {
-  pointer-events: none;
-}
-
 .layer-options div {
   display: inline-block;
 }

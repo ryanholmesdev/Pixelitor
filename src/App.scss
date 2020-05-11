@@ -40,3 +40,7 @@ input[type='number'] {
     max-width: 200px;
   }
 }
+
+.prevent-pointer * {
+  pointer-events: none;
+}

@@ -7,7 +7,7 @@ import { layer } from '../../data/Layers';
 const LayersContainer = (props) => {
   const { layers } = props;
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [draggingIndex] = useState(null);
+  const [draggingIndex, setDraggingIndex] = useState(null);
   const [opacity, setOpacity] = useState(100);
 
   const selectLayer = (index) => {
@@ -49,13 +49,14 @@ const LayersContainer = (props) => {
     return array;
   };
 
-  const moveSelectedLayer = (targetIndex) => {
+  const moveSelectedLayer = (targetIndex, currentIndex) => {
+    if (currentIndex === null || currentIndex === undefined) currentIndex = selectedIndex;
     let newLayers = layers;
     const targetOrder = newLayers[targetIndex].order;
-    const selectedOrder = newLayers[selectedIndex].order;
+    const selectedOrder = newLayers[currentIndex].order;
     newLayers[targetIndex].order = selectedOrder;
     newLayers[selectedOrder].order = targetOrder;
-    const orderedLayers = moveItemInArray(newLayers, selectedIndex, targetIndex);
+    const orderedLayers = moveItemInArray(newLayers, currentIndex, targetIndex);
     props.updateLayers(orderedLayers);
     setSelectedIndex(targetIndex);
   };
@@ -96,10 +97,12 @@ const LayersContainer = (props) => {
               key={layer.id}
               index={index}
               layer={{ ...layer }}
-              draggingIndex={draggingIndex}
               updateLayer={props.updateLayer}
               selectLayer={selectLayer}
               isRenaming={selectedIndex === index ? true : false}
+              draggingIndex={draggingIndex}
+              setDraggingIndex={(index) => setDraggingIndex(index)}
+              moveSelectedLayer={moveSelectedLayer}
             />
           );
         })}
