@@ -29,7 +29,6 @@ const Layer = (props) => {
   };
 
   const onDragStart = (index) => {
-    console.log('Drag start');
     props.setDraggingIndex(index);
   };
 
@@ -46,9 +45,7 @@ const Layer = (props) => {
   };
 
   const onDragLeave = (event) => {
-    console.log('on drag leave');
     setisDraggingEnter(false);
-    //event.stopPropagation();
   };
 
   const onDrop = (targetIndex, event) => {
@@ -58,7 +55,6 @@ const Layer = (props) => {
   };
 
   const onDragEnd = (event) => {
-    console.log('Drag end');
     setisDraggingEnter(false);
     props.setDraggingIndex(null);
   };

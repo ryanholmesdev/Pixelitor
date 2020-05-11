@@ -8,12 +8,24 @@ const Canvas = (props) => {
 
   const fillCircle = (x, y, radius, fillColor, canvas) => {
     // todo maybe move this context globally
-    const canvasContext = canvas.getContext('2d');
-    canvasContext.fillStyle = fillColor;
-    canvasContext.beginPath();
-    canvasContext.moveTo(x, y);
-    canvasContext.arc(x, y, radius, 0, Math.PI * 2, false);
-    canvasContext.fill();
+    const ctx = canvas.getContext('2d');
+    ctx.globalAlpha = calculateOpacity(props.layer.opacity);
+    ctx.fillStyle = fillColor;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+    ctx.fill();
+  };
+
+  // Opacity is 0 - 100 need to format like 0.99
+  const calculateOpacity = (opacity) => {
+    if (opacity !== 100) {
+      if (opacity.toString().length === 1) {
+        return Number(`0.0${opacity}`);
+      }
+      return Number(`0.${opacity}`);
+    }
+    return 1.0;
   };
 
   const onMouseDown = () => {
@@ -38,13 +50,15 @@ const Canvas = (props) => {
     setMostRecentDrawData(canvasEle.current.toDataURL());
   };
 
-  const reDrawCanvasOnSizeChanges = () => {
+  const reDrawCanvasOnSizeChanges = (clearCanvasFirst) => {
     const drawData = mostRecentDrawData;
     if (drawData) {
-      const canvasContext = canvasEle.current.getContext('2d');
+      let ctx = canvasEle.current.getContext('2d');
+      if (clearCanvasFirst === true) ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
+      ctx.globalAlpha = calculateOpacity(props.layer.opacity);
       var image = new Image();
       image.onload = function () {
-        canvasContext.drawImage(image, 0, 0);
+        ctx.drawImage(image, 0, 0);
       };
       image.src = drawData;
     }
@@ -52,10 +66,17 @@ const Canvas = (props) => {
 
   useEffect(() => {
     if (mostRecentDrawData !== null) {
-      reDrawCanvasOnSizeChanges();
+      reDrawCanvasOnSizeChanges(false);
     }
     // eslint-disable-next-line
   }, [props.canvasWidth, props.canvasHeight]);
+
+  useEffect(() => {
+    if (mostRecentDrawData !== null) {
+      reDrawCanvasOnSizeChanges(true);
+    }
+    // eslint-disable-next-line
+  }, [props.layer.opacity]);
 
   return (
     <canvas

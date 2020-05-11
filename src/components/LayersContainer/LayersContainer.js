@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './LayersContainer.scss';
 import Layer from '../Layer/Layer';
 import { FiChevronsUp, FiChevronsDown, FiFile, FiTrash } from 'react-icons/fi';
@@ -6,9 +6,11 @@ import { layer } from '../../data/Layers';
 
 const LayersContainer = (props) => {
   const { layers } = props;
+
+  // anytime you want to update selectedIndex call method setLayerToBeSelected
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [draggingIndex, setDraggingIndex] = useState(null);
-  const [opacity, setOpacity] = useState(100);
+  const [opacity, setOpacity] = useState(layers[selectedIndex].opacity);
 
   const selectLayer = (index) => {
     // un select previous selected.
@@ -17,7 +19,7 @@ const LayersContainer = (props) => {
 
     // select current.
     newArray[index].isSelected = true;
-    setSelectedIndex(index);
+    setLayerToBeSelected(index);
     props.updateLayers(newArray);
   };
 
@@ -30,7 +32,7 @@ const LayersContainer = (props) => {
       newArray[i].order = i;
     }
     props.updateLayers(newArray);
-    setSelectedIndex(selectedIndex);
+    setLayerToBeSelected(selectedIndex);
   };
 
   const deleteLayer = (index) => {
@@ -58,7 +60,36 @@ const LayersContainer = (props) => {
     newLayers[selectedOrder].order = targetOrder;
     const orderedLayers = moveItemInArray(newLayers, currentIndex, targetIndex);
     props.updateLayers(orderedLayers);
-    setSelectedIndex(targetIndex);
+    setLayerToBeSelected(targetIndex);
+  };
+
+  const onOpacityChange = (value) => {
+    setOpacity(value);
+  };
+
+  // Updates the layers opacity after change and timeout
+  useEffect(() => {
+    const updateLayersOpacity = () => {
+      let updatedLayer = layers[selectedIndex];
+      updatedLayer.opacity = parseFloat(opacity);
+      props.updateLayer(updatedLayer, selectedIndex);
+    };
+
+    if (opacity !== props.layers[selectedIndex].opacity) {
+      let debouncer = setTimeout(() => {
+        updateLayersOpacity();
+      }, 300);
+      return () => {
+        clearTimeout(debouncer);
+      };
+    }
+    // eslint-disable-next-line
+  }, [opacity]);
+
+  const setLayerToBeSelected = (index) => {
+    setSelectedIndex(index);
+    // update opacity
+    setOpacity(layers[index].opacity);
   };
 
   const isMoveUpLayerDisabled = () => {
@@ -69,10 +100,6 @@ const LayersContainer = (props) => {
   };
   const isTrashDisabled = () => {
     return layers.length === 1;
-  };
-
-  const onOpacityChange = (value) => {
-    setOpacity(value);
   };
 
   return (

@@ -4,6 +4,7 @@ class layer {
   order = null;
   isSelected = true;
   isVisible = true;
+  opacity = 100;
   constructor(id) {
     this.id = id;
     this.order = id;
