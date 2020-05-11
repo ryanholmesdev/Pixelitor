@@ -68,6 +68,12 @@ export default class App extends Component {
     });
   };
 
+  updateSettings = (settings) => {
+    this.setState({
+      settings: settings,
+    });
+  };
+
   render() {
     return (
       <div className="App">
@@ -81,16 +87,18 @@ export default class App extends Component {
               activeToolName={this.state.activeToolName}
               layers={this.state.layers}
               updateLayers={this.updateLayer}
+              updateSettings={this.updateSettings}
             ></CanvasDocument>
           </div>
 
           <RightNav
-            {...this.state.settings}
+            settings={this.state.settings}
             onCanvasSizeChange={this.onCanvasSizeChange}
             onColorChange={this.handleColorChange}
             onBrushSizeChange={this.brushChange}
             layers={this.state.layers}
             updateLayers={this.updateLayer}
+            updateSettings={this.updateSettings}
           ></RightNav>
         </div>
       </div>

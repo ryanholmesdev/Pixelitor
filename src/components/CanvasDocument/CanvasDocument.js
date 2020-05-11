@@ -5,29 +5,40 @@ import Canvas from '../Canvas/Canvas';
 
 const CanvasDocument = (props) => {
   const { settings, activeToolName } = props;
-  const { minCanvasWidth, minCanvasHeight, maxCanvasWidth, maxCanvasHeight, color, brushSize } = settings;
-
-  const [canvasWidth, setCanvasWidth] = useState(settings.canvasWidth);
-  const [canvasHeight, setCanvasHeight] = useState(settings.canvasHeight);
-
+  const {
+    canvasWidth,
+    canvasHeight,
+    minCanvasWidth,
+    minCanvasHeight,
+    maxCanvasWidth,
+    maxCanvasHeight,
+    color,
+    brushSize,
+  } = settings;
   const [canvasWrapperEle] = useState(React.createRef());
+  const moveableEle = React.useRef();
   const pageWrapperEle = useRef(null);
   const [moveableBounds, setMoveableBounds] = useState(null);
-
   const [target, setTarget] = React.useState();
   const [frame] = React.useState({
     translate: [0, 0],
     width: 100,
     height: 100,
   });
-
   const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
   const [isResizing, setIsReszing] = React.useState(false);
   const [isAllowedToDraw, setIsAllowedToDraw] = useState(false);
 
   useEffect(() => {
     setTarget(canvasWrapperEle.current);
+    setMoveableBounds(getMoveableBound());
   }, [canvasWrapperEle]);
+
+  useEffect(() => {
+    if (moveableEle !== undefined) {
+      moveableEle.current.moveable.updateRect();
+    }
+  }, [canvasWidth, canvasHeight]);
 
   const setIsUserAllowedToDraw = () => {
     const isAllowed = activeToolName === 'Pen Tool' ? true : false;
@@ -35,9 +46,6 @@ const CanvasDocument = (props) => {
   };
 
   useEffect(setIsUserAllowedToDraw, [activeToolName]);
-  useEffect(() => {
-    setMoveableBounds(getMoveableBound());
-  }, []);
 
   const getMoveableBound = () => {
     const wrapper = pageWrapperEle.current;
@@ -74,6 +82,7 @@ const CanvasDocument = (props) => {
       </div>
 
       <Moveable
+        ref={moveableEle}
         className={`moveable-canvas-container ${activeToolName !== 'Select Tool' ? 'not-active' : ''}`}
         target={target}
         resizable={activeToolName === 'Select Tool' ? true : false}
@@ -109,11 +118,13 @@ const CanvasDocument = (props) => {
             Need to actually set the canvas width and height properties, doing so will empty the canvas so will need to redraw it.
           */
           // get the width and height from inline styling.
-          const width = parseFloat(target.style.width.replace('px', ''));
-          const height = parseFloat(target.style.height.replace('px', ''));
+          const width = Math.round(parseFloat(target.style.width.replace('px', '')));
+          const height = Math.round(parseFloat(target.style.height.replace('px', '')));
           if (canvasWidth !== width || canvasHeight !== height) {
-            setCanvasWidth(width);
-            setCanvasHeight(height);
+            let newSettings = settings;
+            newSettings.canvasWidth = width;
+            newSettings.canvasHeight = height;
+            props.updateSettings(newSettings);
           }
           setIsReszing(false);
         }}

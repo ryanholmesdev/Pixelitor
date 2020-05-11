@@ -13,7 +13,7 @@ const RightNav = (props) => {
     minCanvasHeight,
     maxCanvasWidth,
     maxCanvasHeight,
-  } = props;
+  } = props.settings;
   const { layers } = props;
 
   const updateLayer = (layer, index) => {
@@ -23,6 +23,22 @@ const RightNav = (props) => {
   };
   const updateLayers = (newLayers) => {
     props.updateLayers(newLayers);
+  };
+
+  const sizeChange = (value, event) => {
+    let newSettings = props.settings;
+    if (event === 'width') {
+      if (value > newSettings.maxCanvasWidth) {
+        value = newSettings.maxCanvasWidth;
+      }
+      newSettings.canvasWidth = value;
+    } else if (event === 'height') {
+      if (value > newSettings.maxCanvasHeight) {
+        value = newSettings.maxCanvasHeight;
+      }
+      newSettings.canvasHeight = value;
+    }
+    props.updateSettings(newSettings);
   };
 
   return (
@@ -35,7 +51,7 @@ const RightNav = (props) => {
               <label>Width</label>
               <input
                 type="number"
-                onChange={(event) => props.onCanvasSizeChange(event.target.value, 'width')}
+                onChange={(event) => sizeChange(event.target.value, 'width')}
                 min={minCanvasWidth}
                 max={maxCanvasWidth}
                 value={canvasWidth}
