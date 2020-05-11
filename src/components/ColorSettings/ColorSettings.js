@@ -7,6 +7,7 @@ import Colors from '../../data/DefaultColors';
 export const ColorSettings = (props) => {
   const [colors, setColors] = useState(Colors);
   const [isColorOptionVisable, setIsColorOptionVisable] = useState(false);
+  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
 
   const addSelectedColorToSachet = () => {
     const color = {
@@ -14,6 +15,14 @@ export const ColorSettings = (props) => {
       value: props.color,
     };
     setColors([...colors, color]);
+  };
+
+  const deleteSelectedColor = () => {
+    let newColors = [...colors];
+    newColors.splice(selectedColorIndex, 1);
+    // reset ids
+    newColors.forEach((color, index) => (color.id = index));
+    setColors(...[newColors]);
   };
 
   return (
@@ -34,13 +43,16 @@ export const ColorSettings = (props) => {
           ></div>
         </div>
         <div className="color-satchets">
-          {colors.map((color) => {
+          {colors.map((color, index) => {
             return (
               <div
                 className="color"
                 key={color.id}
                 style={{ backgroundColor: color.value }}
-                onClick={() => props.updateColor(color.value)}
+                onClick={() => {
+                  props.updateColor(color.value);
+                  setSelectedColorIndex(index);
+                }}
               ></div>
             );
           })}
@@ -51,7 +63,9 @@ export const ColorSettings = (props) => {
           <button onClick={addSelectedColorToSachet}>
             {<FiFile className="icon" size="25px" style={{ margin: 'auto' }} />}
           </button>
-          <button>{<FiTrash className="icon" size="25px" style={{ margin: 'auto' }} />}</button>
+          <button disabled={colors.length === 0} onClick={deleteSelectedColor}>
+            {<FiTrash className="icon" size="25px" style={{ margin: 'auto' }} />}
+          </button>
         </div>
       </div>
     </div>

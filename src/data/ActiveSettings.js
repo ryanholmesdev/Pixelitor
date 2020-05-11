@@ -1,5 +1,5 @@
 const settings = {
-  color: '#194D33',
+  color: '#476797',
   brushSize: 18,
   canvasWidth: 500,
   canvasHeight: 500,
