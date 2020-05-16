@@ -8,7 +8,6 @@ const Canvas = (props) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [mostRecentDrawData, setMostRecentDrawData] = useState(null);
   const [startPosition, setStartPosition] = useState(null);
-  const [existingLines, setExistingLines] = useState([]);
   const [mousePos, setMousePos] = useState(null);
   const [requireCanvasOverlay, setRequireCanvasOverlay] = useState(false);
 
@@ -24,34 +23,18 @@ const Canvas = (props) => {
   };
 
   const draw = (mouseX, mouseY) => {
-    const ctx = canvasEle.current.getContext('2d');
-    if (mostRecentDrawData) {
-      reDrawCanvasOnSizeChanges(true);
-    } else {
-      // clear canvas
-      ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
-    }
-    // might need to re draw the canvas here.
-    ctx.strokeSyle = color;
+    const ctx = canvasOverlayEle.current.getContext('2d');
+
+    // clear canvas
+    ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
+
+    const { startX, startY } = startPosition;
+    ctx.strokeStyle = 'darkred';
     ctx.lineWidth = brushSize;
     ctx.beginPath();
-
-    existingLines.forEach((line) => {
-      ctx.moveTo(line.startX, line.startY);
-      ctx.lineTo(line.endX, line.endY);
-    });
-
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(mouseX, mouseY);
     ctx.stroke();
-
-    if (isDrawing) {
-      const { startX, startY } = startPosition;
-      ctx.strokeStyle = 'darkred';
-      ctx.lineWidth = brushSize;
-      ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(mouseX, mouseY);
-      ctx.stroke();
-    }
   };
 
   // Opacity is 0 - 100 need to format like 0.99
@@ -67,7 +50,6 @@ const Canvas = (props) => {
 
   const onMouseDown = (e) => {
     setIsDrawing(true);
-
     if (selectedTool === 'Line Tool') {
       const rect = canvasOverlayEle.current.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -76,6 +58,7 @@ const Canvas = (props) => {
         startX: x,
         startY: y,
       });
+
       draw(x, y);
     }
   };
@@ -98,28 +81,30 @@ const Canvas = (props) => {
         mouseX: x,
         mouseY: y,
       });
-      const startX = startPosition.x;
-      const startY = startPosition.y;
       draw(x, y);
     }
   };
 
   const onMouseUp = (e) => {
     setIsDrawing(false);
-    setMostRecentDrawData(canvasEle.current.toDataURL());
-    if (selectedTool === 'Line Tool') {
-      let existingLinesNew = existingLines;
+    if (requireCanvasOverlay) {
       const { startX, startY } = startPosition;
       const { mouseX, mouseY } = mousePos;
 
-      existingLines.push({
-        startX: startX,
-        startY: startY,
-        endX: mouseX,
-        endY: mouseY,
-      });
-      setExistingLines(existingLines);
+      // draw this on the main canvas.
+      const ctx = canvasEle.current.getContext('2d');
+      ctx.strokeStyle = 'darkred';
+      ctx.lineWidth = brushSize;
+      ctx.beginPath();
+      ctx.stroke();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(mouseX, mouseY);
+
+      // Clear the overlayed canvas.
+      const overlayCtx = canvasOverlayEle.current.getContext('2d');
+      overlayCtx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
     }
+    setMostRecentDrawData(canvasEle.current.toDataURL());
   };
 
   const reDrawCanvasOnSizeChanges = (clearCanvasFirst) => {
@@ -163,18 +148,6 @@ const Canvas = (props) => {
   return (
     <div>
       <canvas
-        ref={canvasOverlayEle}
-        className={`${requireCanvasOverlay === false ? 'hide' : ''} ${
-          props.layer.isSelected === false ? 'disable-pointer-events' : ''
-        }`}
-        style={{ zIndex: `-${props.layer.order}` }}
-        width={props.canvasWidth}
-        height={props.canvasHeight}
-        onMouseDown={props.allowedToDraw === true && requireCanvasOverlay === true ? onMouseDown : undefined}
-        onMouseMove={isDrawing === true && requireCanvasOverlay === true ? onMouseMove : undefined}
-        onMouseUp={isDrawing === true && requireCanvasOverlay === true ? onMouseUp : undefined}
-      ></canvas>
-      <canvas
         ref={canvasEle}
         style={{ zIndex: `-${props.layer.order}` }}
         className={`${props.layer.name} ${props.layer.isVisible === false ? 'hide' : ''} ${
@@ -185,6 +158,18 @@ const Canvas = (props) => {
         onMouseDown={props.allowedToDraw === true && requireCanvasOverlay === false ? onMouseDown : undefined}
         onMouseMove={isDrawing === true && requireCanvasOverlay === false ? onMouseMove : undefined}
         onMouseUp={isDrawing === true && requireCanvasOverlay === false ? onMouseUp : undefined}
+      ></canvas>
+      <canvas
+        ref={canvasOverlayEle}
+        className={`${requireCanvasOverlay === false ? 'hide' : ''} ${
+          props.layer.isSelected === false ? 'disable-pointer-events' : ''
+        }`}
+        style={{ zIndex: `-${props.layer.order}` }}
+        width={props.canvasWidth}
+        height={props.canvasHeight}
+        onMouseDown={props.allowedToDraw === true && requireCanvasOverlay === true ? onMouseDown : undefined}
+        onMouseMove={isDrawing === true && requireCanvasOverlay === true ? onMouseMove : undefined}
+        onMouseUp={isDrawing === true && requireCanvasOverlay === true ? onMouseUp : undefined}
       ></canvas>
     </div>
   );
