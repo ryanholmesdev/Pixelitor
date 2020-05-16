@@ -41,7 +41,7 @@ const CanvasDocument = (props) => {
   }, [canvasWidth, canvasHeight]);
 
   const setIsUserAllowedToDraw = () => {
-    const isAllowed = activeToolName === 'Pen Tool' ? true : false;
+    const isAllowed = activeToolName === 'Pen Tool' || activeToolName === 'Line Tool' ? true : false;
     setIsAllowedToDraw(isAllowed);
   };
 
@@ -74,6 +74,7 @@ const CanvasDocument = (props) => {
               allowedToDraw={
                 isAllowedToDraw === true && layer.isVisible === true && layer.isSelected === true ? true : false
               }
+              selectedTool={activeToolName}
               brushSize={brushSize}
               color={color}
             ></Canvas>
