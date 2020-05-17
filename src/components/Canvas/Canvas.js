@@ -11,29 +11,44 @@ const Canvas = (props) => {
   const [mousePos, setMousePos] = useState(null);
   const [requireCanvasOverlay, setRequireCanvasOverlay] = useState(false);
 
-  const fillCircle = (mouseX, mouseY, radius, fillColor, canvas) => {
-    // todo maybe move this context globally
-    const ctx = canvas.getContext('2d');
-    ctx.globalAlpha = calculateOpacity(props.layer.opacity);
-    ctx.fillStyle = fillColor;
-    ctx.beginPath();
-    ctx.moveTo(mouseX, mouseY);
-    ctx.arc(mouseX, mouseY, radius, 0, Math.PI * 2, false);
-    ctx.fill();
+  const setCanvasSettings = (canvasCtx) => {
+    canvasCtx.globalAlpha = calculateOpacity(props.layer.opacity);
+    canvasCtx.strokeStyle = color;
+    canvasCtx.lineWidth = brushSize;
+    return canvasCtx;
   };
 
-  const draw = (mouseX, mouseY) => {
-    const ctx = canvasOverlayEle.current.getContext('2d');
+  const draw = (mouseX, mouseY, canvasEle, clearCanvas) => {
+    const ctx = canvasEle.getContext('2d');
+    // clear when drawing on overlayed canvas.
+    if (clearCanvas) ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
+    // set up start coords.
+    let startX = mouseX;
+    let startY = mouseY;
+    if (startPosition) {
+      startX = startPosition.startX;
+      startY = startPosition.startY;
+    }
+    setCanvasSettings(ctx);
 
-    // clear canvas
-    ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
-
-    const { startX, startY } = startPosition;
-    ctx.strokeStyle = 'darkred';
-    ctx.lineWidth = brushSize;
+    // Begin draw.
     ctx.beginPath();
-    ctx.moveTo(startX, startY);
-    ctx.lineTo(mouseX, mouseY);
+    if (selectedTool === 'Pen Tool') {
+      ctx.moveTo(mouseX, mouseY);
+      ctx.arc(mouseX, mouseY, brushSize, 0, Math.PI * 2, false);
+    } else if (selectedTool === 'Line Tool') {
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(mouseX, mouseY);
+    } else if (selectedTool === 'Circle Tool') {
+      let radius = mouseX - startX;
+      ctx.arc(startX, startY, radius, 0, 2 * Math.PI);
+    } else if (selectedTool === 'Rectangle Tool') {
+      let height = startX - mouseX;
+      let width = startY - mouseY;
+      ctx.rect(mouseX, mouseY, width, height);
+    } else {
+      console.error('Selected tool not available');
+    }
     ctx.stroke();
   };
 
@@ -50,7 +65,8 @@ const Canvas = (props) => {
 
   const onMouseDown = (e) => {
     setIsDrawing(true);
-    if (selectedTool === 'Line Tool') {
+    // If using overlay required to save start position of mouse.
+    if (requireCanvasOverlay) {
       const rect = canvasOverlayEle.current.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
@@ -58,8 +74,7 @@ const Canvas = (props) => {
         startX: x,
         startY: y,
       });
-
-      draw(x, y);
+      draw(x, y, canvasOverlayEle.current, true);
     }
   };
 
@@ -71,35 +86,25 @@ const Canvas = (props) => {
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    const radius = brushSize;
-    const fillColor = color;
 
-    if (selectedTool === 'Pen Tool') {
-      fillCircle(x, y, radius, fillColor, canvas);
-    } else if (selectedTool === 'Line Tool') {
+    if (!requireCanvasOverlay) {
+      // just regular draw.
+      draw(x, y, canvas, false);
+    } else {
       setMousePos({
         mouseX: x,
         mouseY: y,
       });
-      draw(x, y);
+      draw(x, y, canvasOverlayEle.current, true);
     }
   };
 
   const onMouseUp = (e) => {
     setIsDrawing(false);
     if (requireCanvasOverlay) {
-      const { startX, startY } = startPosition;
       const { mouseX, mouseY } = mousePos;
-
-      // draw this on the main canvas.
-      const ctx = canvasEle.current.getContext('2d');
-      ctx.strokeStyle = 'darkred';
-      ctx.lineWidth = brushSize;
-      ctx.beginPath();
-      ctx.stroke();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(mouseX, mouseY);
-
+      draw(mouseX, mouseY, canvasEle.current, false);
+      setStartPosition(null);
       // Clear the overlayed canvas.
       const overlayCtx = canvasOverlayEle.current.getContext('2d');
       overlayCtx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
@@ -136,8 +141,7 @@ const Canvas = (props) => {
   }, [props.layer.opacity]);
 
   useEffect(() => {
-    if (selectedTool === 'Line Tool') {
-      console.log('require overlay');
+    if (selectedTool === 'Line Tool' || selectedTool === 'Circle Tool' || selectedTool === 'Rectangle Tool') {
       setRequireCanvasOverlay(true);
       return () => {
         setRequireCanvasOverlay(false);

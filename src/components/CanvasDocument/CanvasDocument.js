@@ -41,7 +41,13 @@ const CanvasDocument = (props) => {
   }, [canvasWidth, canvasHeight]);
 
   const setIsUserAllowedToDraw = () => {
-    const isAllowed = activeToolName === 'Pen Tool' || activeToolName === 'Line Tool' ? true : false;
+    const isAllowed =
+      activeToolName === 'Pen Tool' ||
+      activeToolName === 'Line Tool' ||
+      activeToolName === 'Circle Tool' ||
+      activeToolName === 'Rectangle Tool'
+        ? true
+        : false;
     setIsAllowedToDraw(isAllowed);
   };
 
