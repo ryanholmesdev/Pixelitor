@@ -2,9 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import './CanvasDocument.scss';
 import Moveable from 'react-moveable';
 import Canvas from '../Canvas/Canvas';
+import { connect, useDispatch } from 'react-redux';
+import { updateSettings } from '../../actions/settings';
 
 const CanvasDocument = (props) => {
   const { settings, activeToolName } = props;
+  const dispatch = useDispatch();
   const {
     canvasWidth,
     canvasHeight,
@@ -131,7 +134,7 @@ const CanvasDocument = (props) => {
             let newSettings = settings;
             newSettings.canvasWidth = width;
             newSettings.canvasHeight = height;
-            props.updateSettings(newSettings);
+            dispatch(updateSettings(newSettings));
           }
           setIsReszing(false);
         }}
@@ -151,4 +154,8 @@ const CanvasDocument = (props) => {
   );
 };
 
-export default CanvasDocument;
+const mapStateToProps = (state) => {
+  return { layers: state.layers, settings: state.settings };
+};
+
+export default connect(mapStateToProps)(CanvasDocument);

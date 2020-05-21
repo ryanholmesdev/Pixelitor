@@ -9,4 +9,4 @@ const settings = {
   maxCanvasHeight: 1000,
 };
 
-export default settings;
+export { settings };

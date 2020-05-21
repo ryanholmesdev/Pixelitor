@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { addLayer, deleteLayer, updateLayer, updateLayers } from '../../actions/layer';
 import './LayersContainer.scss';
 import Layer from '../Layer/Layer';
 import { FiChevronsUp, FiChevronsDown, FiFile, FiTrash } from 'react-icons/fi';
-import { layer } from '../../data/Layers';
 
 const LayersContainer = (props) => {
-  const { layers } = props;
-
+  const layers = useSelector((state) => state.layers);
+  const dispatch = useDispatch();
   // anytime you want to update selectedIndex call method setLayerToBeSelected
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [draggingIndex, setDraggingIndex] = useState(null);
@@ -20,26 +21,12 @@ const LayersContainer = (props) => {
     // select current.
     newArray[index].isSelected = true;
     setLayerToBeSelected(index);
-    props.updateLayers(newArray);
+    dispatch(updateLayers(newArray));
   };
 
   const addNewLayer = () => {
-    let newArray = layers;
-    const newLayer = new layer(newArray.length);
-    newArray[selectedIndex].isSelected = false;
-    newArray.splice(selectedIndex, 0, newLayer);
-    for (var i = newArray.length - 1; i >= 0; i--) {
-      newArray[i].order = i;
-    }
-    props.updateLayers(newArray);
+    dispatch(addLayer(selectedIndex));
     setLayerToBeSelected(selectedIndex);
-  };
-
-  const deleteLayer = (index) => {
-    if (!selectedIndex) index = selectedIndex;
-    let newArray = layers;
-    newArray.splice(index, 1);
-    props.updateLayers(newArray);
   };
 
   // moves object in array from 1 place to another, validate before calling.
@@ -59,7 +46,7 @@ const LayersContainer = (props) => {
     newLayers[targetIndex].order = selectedOrder;
     newLayers[selectedOrder].order = targetOrder;
     const orderedLayers = moveItemInArray(newLayers, currentIndex, targetIndex);
-    props.updateLayers(orderedLayers);
+    dispatch(updateLayers(orderedLayers));
     setLayerToBeSelected(targetIndex);
   };
 
@@ -72,10 +59,10 @@ const LayersContainer = (props) => {
     const updateLayersOpacity = () => {
       let updatedLayer = layers[selectedIndex];
       updatedLayer.opacity = parseFloat(opacity);
-      props.updateLayer(updatedLayer, selectedIndex);
+      updateLayer(updatedLayer, selectedIndex);
     };
 
-    if (opacity !== props.layers[selectedIndex].opacity) {
+    if (opacity !== layers[selectedIndex].opacity) {
       let debouncer = setTimeout(() => {
         updateLayersOpacity();
       }, 300);
@@ -113,7 +100,7 @@ const LayersContainer = (props) => {
         <button disabled={isMoveDownLayerDisabled()} onClick={() => moveSelectedLayer(selectedIndex + 1)}>
           {<FiChevronsDown className="icon" size="25px" style={{ margin: 'auto' }} />}
         </button>
-        <button disabled={isTrashDisabled()} onClick={() => deleteLayer()}>
+        <button disabled={isTrashDisabled()} onClick={() => dispatch(deleteLayer(selectedIndex))}>
           {<FiTrash className="icon" size="25px" style={{ margin: 'auto' }} />}
         </button>
       </div>
@@ -124,7 +111,7 @@ const LayersContainer = (props) => {
               key={layer.id}
               index={index}
               layer={{ ...layer }}
-              updateLayer={props.updateLayer}
+              updateLayer={(layer, index) => dispatch(updateLayer(layer, index))}
               selectLayer={selectLayer}
               isRenaming={selectedIndex === index ? true : false}
               draggingIndex={draggingIndex}
@@ -149,4 +136,8 @@ const LayersContainer = (props) => {
   );
 };
 
-export default LayersContainer;
+const mapStateToProps = (state) => {
+  return { layers: state.layers };
+};
+
+export default connect(mapStateToProps)(LayersContainer);

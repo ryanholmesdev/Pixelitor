@@ -2,6 +2,8 @@ import React from 'react';
 import './RightNav.scss';
 import LayersContainer from '../LayersContainer/LayersContainer';
 import ColorSettings from '../ColorSettings/ColorSettings';
+import { connect, useSelector, useDispatch } from 'react-redux';
+import { updateSettings } from '../../actions/settings';
 
 const RightNav = (props) => {
   const {
@@ -13,20 +15,12 @@ const RightNav = (props) => {
     minCanvasHeight,
     maxCanvasWidth,
     maxCanvasHeight,
-  } = props.settings;
-  const { layers } = props;
-
-  const updateLayer = (layer, index) => {
-    let newLayers = layers;
-    newLayers[index] = layer;
-    props.updateLayers(newLayers);
-  };
-  const updateLayers = (newLayers) => {
-    props.updateLayers(newLayers);
-  };
+  } = useSelector((state) => state.settings);
+  const settings = useSelector((state) => state.settings);
+  const dispatch = useDispatch();
 
   const sizeChange = (value, event) => {
-    let newSettings = props.settings;
+    let newSettings = settings;
     if (event === 'width') {
       if (value > newSettings.maxCanvasWidth) {
         value = newSettings.maxCanvasWidth;
@@ -38,7 +32,19 @@ const RightNav = (props) => {
       }
       newSettings.canvasHeight = value;
     }
-    props.updateSettings(newSettings);
+    dispatch(updateSettings(newSettings));
+  };
+
+  const handleColorChange = (newColor) => {
+    let newSettings = settings;
+    newSettings.color = newColor;
+    dispatch(updateSettings(newSettings));
+  };
+
+  const updateBrushSize = (value) => {
+    let newSettings = settings;
+    newSettings.brushSize = parseInt(value);
+    dispatch(updateSettings(newSettings));
   };
 
   return (
@@ -60,7 +66,7 @@ const RightNav = (props) => {
             <div>
               <label>Height</label>
               <input
-                onChange={(event) => props.onCanvasSizeChange(event.target.value, 'height')}
+                onChange={(event) => sizeChange(event.target.value, 'height')}
                 type="number"
                 min={minCanvasHeight}
                 max={maxCanvasHeight}
@@ -70,7 +76,7 @@ const RightNav = (props) => {
             <div>
               <label>X position</label>
               <input
-                onChange={(event) => props.onCanvasSizeChange(event.target.value, 'height')}
+                onChange={(event) => sizeChange(event.target.value, 'height')}
                 type="number"
                 min={minCanvasHeight}
                 max={maxCanvasHeight}
@@ -80,7 +86,7 @@ const RightNav = (props) => {
             <div>
               <label>Y position</label>
               <input
-                onChange={(event) => props.onCanvasSizeChange(event.target.value, 'height')}
+                onChange={(event) => sizeChange(event.target.value, 'height')}
                 type="number"
                 min={minCanvasHeight}
                 max={maxCanvasHeight}
@@ -90,7 +96,7 @@ const RightNav = (props) => {
           </div>
         </div>
         <div className="setting">
-          <ColorSettings color={color} updateColor={props.onColorChange} />
+          <ColorSettings color={color} updateColor={handleColorChange} />
         </div>
         <div className="setting range-container">
           <h3>Brush Size</h3>
@@ -99,20 +105,20 @@ const RightNav = (props) => {
             min="1"
             max="100"
             value={brushSize}
-            onChange={(event) => props.onBrushSizeChange(event.target.value)}
+            onChange={(event) => updateBrushSize(event.target.value)}
           ></input>
-          <input
-            type="number"
-            value={brushSize}
-            onChange={(event) => props.onBrushSizeChange(event.target.value)}
-          ></input>
+          <input type="number" value={brushSize} onChange={(event) => updateBrushSize(event.target.value)}></input>
         </div>
         <div className="setting">
-          <LayersContainer layers={layers} updateLayer={updateLayer} updateLayers={updateLayers} />
+          <LayersContainer />
         </div>
       </div>
     </div>
   );
 };
 
-export default RightNav;
+const mapStateToProps = (state) => {
+  return { settings: state.settings };
+};
+
+export default connect(mapStateToProps)(RightNav);
