@@ -29,6 +29,23 @@ export default class App extends Component {
       activeToolName: activeToolName,
     });
   };
+
+  undo = () => {
+    console.log('undo');
+  };
+
+  keyDownHandler = (e) => {
+    if (e.keyCode === 90 && e.ctrlKey) {
+      this.undo();
+    }
+  };
+  componentDidMount() {
+    document.addEventListener('keydown', this.keyDownHandler);
+  }
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.keyDownHandler);
+  }
+
   render() {
     return (
       <div className="App">
