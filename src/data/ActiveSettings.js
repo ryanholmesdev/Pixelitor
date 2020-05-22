@@ -7,6 +7,8 @@ const settings = {
   minCanvasHeight: 50,
   maxCanvasWidth: 1000,
   maxCanvasHeight: 1000,
+  canvasX: 0,
+  canvasY: 0,
 };
 
 export { settings };

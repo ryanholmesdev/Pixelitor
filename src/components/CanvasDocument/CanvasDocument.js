@@ -15,6 +15,8 @@ const CanvasDocument = (props) => {
     minCanvasHeight,
     maxCanvasWidth,
     maxCanvasHeight,
+    canvasX,
+    canvasY,
     color,
     brushSize,
   } = settings;
@@ -41,7 +43,7 @@ const CanvasDocument = (props) => {
     if (moveableEle !== undefined) {
       moveableEle.current.moveable.updateRect();
     }
-  }, [canvasWidth, canvasHeight]);
+  }, [canvasWidth, canvasHeight, canvasX, canvasY]);
 
   const setIsUserAllowedToDraw = () => {
     const isAllowed =
@@ -71,7 +73,7 @@ const CanvasDocument = (props) => {
       <div
         ref={canvasWrapperEle}
         className={`canvas-wrapper ${isDraggingCanvas === true || isResizing === true ? 'active' : ''}`}
-        style={{ width: `${canvasWidth}px`, height: `${canvasHeight}px` }}
+        style={{ width: `${canvasWidth}px`, height: `${canvasHeight}px`, left: `${canvasX}px`, top: `${canvasY}px` }}
       >
         {props.layers.map((layer) => {
           return (
@@ -145,6 +147,7 @@ const CanvasDocument = (props) => {
         onDrag={({ target, beforeTranslate }) => {
           frame.translate = beforeTranslate;
           target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px)`;
+          console.log(frame.translate);
         }}
         onDragEnd={() => {
           setIsDraggingCanvas(false);

@@ -11,6 +11,8 @@ const RightNav = (props) => {
     color,
     canvasWidth,
     canvasHeight,
+    canvasX,
+    canvasY,
     minCanvasWidth,
     minCanvasHeight,
     maxCanvasWidth,
@@ -31,6 +33,17 @@ const RightNav = (props) => {
         value = newSettings.maxCanvasHeight;
       }
       newSettings.canvasHeight = value;
+    }
+    dispatch(updateSettings(newSettings));
+  };
+
+  const axisChange = (value, type) => {
+    value = parseInt(value);
+    let newSettings = settings;
+    if (type === 'x') {
+      newSettings.canvasX = value;
+    } else if (type === 'y') {
+      newSettings.canvasY = value;
     }
     dispatch(updateSettings(newSettings));
   };
@@ -76,21 +89,19 @@ const RightNav = (props) => {
             <div>
               <label>X position</label>
               <input
-                onChange={(event) => sizeChange(event.target.value, 'height')}
+                onChange={(event) => axisChange(event.target.value, 'x')}
                 type="number"
-                min={minCanvasHeight}
-                max={maxCanvasHeight}
-                value={canvasHeight}
+                min={0}
+                value={canvasX}
               ></input>
             </div>
             <div>
               <label>Y position</label>
               <input
-                onChange={(event) => sizeChange(event.target.value, 'height')}
+                onChange={(event) => axisChange(event.target.value, 'y')}
                 type="number"
-                min={minCanvasHeight}
-                max={maxCanvasHeight}
-                value={canvasHeight}
+                min={0}
+                value={canvasY}
               ></input>
             </div>
           </div>

@@ -2,6 +2,7 @@
   height: 100%;
 }
 .canvas-wrapper {
+  position: relative;
   overflow-y: auto;
   z-index: 900;
   background-color: #e7edef;
