@@ -48,6 +48,7 @@ const Canvas = (props) => {
       ctx.rect(mouseX, mouseY, width, height);
     } else {
       console.error('Selected tool not available');
+      return;
     }
     ctx.stroke();
   };
@@ -109,7 +110,12 @@ const Canvas = (props) => {
       const overlayCtx = canvasOverlayEle.current.getContext('2d');
       overlayCtx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
     }
-    setMostRecentDrawData(canvasEle.current.toDataURL());
+
+    const imageData = canvasEle.current.toDataURL();
+    setMostRecentDrawData(imageData);
+    let newLayer = props.layer;
+    newLayer.latestData = imageData;
+    props.updateLayer(newLayer);
   };
 
   const reDrawCanvasOnSizeChanges = (clearCanvasFirst) => {

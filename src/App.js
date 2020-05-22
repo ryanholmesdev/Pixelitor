@@ -30,9 +30,7 @@ export default class App extends Component {
     });
   };
 
-  undo = () => {
-    console.log('undo');
-  };
+  undo = () => {};
 
   keyDownHandler = (e) => {
     if (e.keyCode === 90 && e.ctrlKey) {

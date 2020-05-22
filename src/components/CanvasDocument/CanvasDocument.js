@@ -4,6 +4,7 @@ import Moveable from 'react-moveable';
 import Canvas from '../Canvas/Canvas';
 import { connect, useDispatch } from 'react-redux';
 import { updateSettings } from '../../actions/settings';
+import { updateLayer as globalUpdateLayer } from '../../actions/layer';
 
 const CanvasDocument = (props) => {
   const { settings, activeToolName } = props;
@@ -68,6 +69,10 @@ const CanvasDocument = (props) => {
     }
   };
 
+  const updateLayer = (layer) => {
+    dispatch(globalUpdateLayer(layer));
+  };
+
   return (
     <div className="page-wrapper" ref={pageWrapperEle}>
       <div
@@ -82,6 +87,7 @@ const CanvasDocument = (props) => {
               canvasWidth={canvasWidth}
               canvasHeight={canvasHeight}
               layer={layer}
+              updateLayer={updateLayer}
               allowedToDraw={
                 isAllowedToDraw === true && layer.isVisible === true && layer.isSelected === true ? true : false
               }
@@ -147,7 +153,6 @@ const CanvasDocument = (props) => {
         onDrag={({ target, beforeTranslate }) => {
           frame.translate = beforeTranslate;
           target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px)`;
-          console.log(frame.translate);
         }}
         onDragEnd={() => {
           setIsDraggingCanvas(false);

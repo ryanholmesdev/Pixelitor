@@ -21,6 +21,9 @@ const deleteLayer = (layers, index) => {
 
 const updateLayer = (layers, layer, index) => {
   let newLayers = layers;
+  if (index === undefined) {
+    index = layers.findIndex((l) => l.id === layer.id);
+  }
   newLayers[index] = layer;
   return newLayers;
 };

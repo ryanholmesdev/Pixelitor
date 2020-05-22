@@ -1,8 +1,41 @@
 import React from 'react';
 import './Navigation.scss';
 import { FiRotateCcw, FiRotateCw } from 'react-icons/fi';
+import { connect, useSelector } from 'react-redux';
+import { saveAs } from 'file-saver';
 
-const Navigation = () => {
+const Navigation = (props) => {
+  const settings = useSelector((state) => state.settings);
+  const layers = useSelector((state) => state.layers);
+  const onExportImageClick = () => {
+    let exportCanvasEle = document.createElement('canvas');
+    exportCanvasEle.id = 'export-canvas-ele';
+    exportCanvasEle.width = settings.canvasWidth;
+    exportCanvasEle.height = settings.canvasHeight;
+
+    const ctx = exportCanvasEle.getContext('2d');
+    const layersOrdered = layers.reverse();
+
+    let totalImages = layers.length;
+    let totalLoaded = 0;
+
+    layersOrdered.forEach((layer) => {
+      const canvasData = layer.latestData;
+      if (canvasData !== null) {
+        let image = new Image();
+        image.onload = function () {
+          ctx.drawImage(image, 0, 0);
+          totalLoaded++;
+          if (totalLoaded === totalImages) {
+            exportCanvasEle.toBlob(function (blob) {
+              saveAs(blob, 'test-image.png');
+            });
+          }
+        };
+        image.src = canvasData;
+      }
+    });
+  };
   return (
     <nav>
       <div>
@@ -16,10 +49,15 @@ const Navigation = () => {
         </div>
       </div>
       <div>
+        <button onClick={onExportImageClick}>Export image</button>
         <button>Login</button>
       </div>
     </nav>
   );
 };
 
-export default Navigation;
+const mapStateToProps = (state) => {
+  return { settings: state.settings, layers: state.layers };
+};
+
+export default connect(mapStateToProps)(Navigation);
