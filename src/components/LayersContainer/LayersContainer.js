@@ -117,6 +117,7 @@ const LayersContainer = (props) => {
               draggingIndex={draggingIndex}
               setDraggingIndex={(index) => setDraggingIndex(index)}
               moveSelectedLayer={moveSelectedLayer}
+              allowDrag={layers.length > 1}
             />
           );
         })}

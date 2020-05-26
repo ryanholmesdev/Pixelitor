@@ -3,7 +3,7 @@ import './Layer.scss';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 const Layer = (props) => {
-  const { index, draggingIndex } = props;
+  const { index, draggingIndex, allowDrag } = props;
   const { name, isVisible, isSelected } = props.layer;
   const [isRenaming, setIsRenaming] = useState(false);
   const [renamingValue, setRenamingValue] = useState(name);
@@ -74,13 +74,13 @@ const Layer = (props) => {
       <div
         className={`layername-container ${draggingIndex !== null ? 'prevent-pointer' : ''}`}
         onClick={!isSelected ? () => props.selectLayer(index) : undefined}
-        draggable="true"
-        onDragStart={() => onDragStart(index)}
-        onDragOver={onDragOver.bind(this)}
-        onDragEnter={(e) => onDragEnter(index, e)}
-        onDragLeave={onDragLeave.bind(this)}
-        onDrop={(e) => onDrop(index, e)}
-        onDragEnd={onDragEnd}
+        draggable={allowDrag ? 'true' : 'false'}
+        onDragStart={allowDrag ? () => onDragStart(index) : undefined}
+        onDragOver={allowDrag ? onDragOver.bind(this) : undefined}
+        onDragEnter={allowDrag ? (e) => onDragEnter(index, e) : undefined}
+        onDragLeave={allowDrag ? onDragLeave.bind(this) : undefined}
+        onDrop={allowDrag ? (e) => onDrop(index, e) : undefined}
+        onDragEnd={allowDrag ? onDragEnd : undefined}
       >
         {!isRenaming && <span onDoubleClick={() => setIsRenaming(true)}> {name}</span>}
         {isRenaming && (
