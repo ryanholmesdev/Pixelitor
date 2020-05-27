@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { addLayer, deleteLayer, updateLayer, updateLayers } from '../../actions/layer';
+import { addLayer, updateLayer, updateLayers } from '../../actions/layer';
 import './LayersContainer.scss';
 import Layer from '../Layer/Layer';
 import { FiChevronsUp, FiChevronsDown, FiFile, FiTrash } from 'react-icons/fi';
@@ -14,19 +14,34 @@ const LayersContainer = (props) => {
   const [opacity, setOpacity] = useState(layers[selectedIndex].opacity);
 
   const selectLayer = (index) => {
+    setLayerToBeSelected(index);
     // un select previous selected.
     let newArray = layers;
     newArray[selectedIndex].isSelected = false;
 
     // select current.
     newArray[index].isSelected = true;
-    setLayerToBeSelected(index);
     dispatch(updateLayers(newArray));
   };
 
   const addNewLayer = () => {
-    dispatch(addLayer(selectedIndex));
     setLayerToBeSelected(selectedIndex);
+    dispatch(addLayer(selectedIndex));
+  };
+
+  const deleteLayer = () => {
+    let newLayers = layers;
+    if (selectedIndex === 0) {
+      newLayers.splice(selectedIndex, 1);
+      setSelectedIndex(selectedIndex);
+      newLayers[selectedIndex].isSelected = true;
+      dispatch(updateLayers(newLayers));
+    } else {
+      newLayers.splice(selectedIndex, 1);
+      newLayers[selectedIndex - 1].isSelected = true;
+      dispatch(updateLayers(newLayers));
+      setSelectedIndex(selectedIndex - 1);
+    }
   };
 
   // moves object in array from 1 place to another, validate before calling.
@@ -100,7 +115,7 @@ const LayersContainer = (props) => {
         <button disabled={isMoveDownLayerDisabled()} onClick={() => moveSelectedLayer(selectedIndex + 1)}>
           {<FiChevronsDown className="icon" size="25px" style={{ margin: 'auto' }} />}
         </button>
-        <button disabled={isTrashDisabled()} onClick={() => dispatch(deleteLayer(selectedIndex))}>
+        <button disabled={isTrashDisabled()} onClick={deleteLayer}>
           {<FiTrash className="icon" size="25px" style={{ margin: 'auto' }} />}
         </button>
       </div>
