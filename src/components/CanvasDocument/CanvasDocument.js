@@ -51,7 +51,8 @@ const CanvasDocument = (props) => {
       (activeToolName === 'Pen Tool' ||
         activeToolName === 'Line Tool' ||
         activeToolName === 'Circle Tool' ||
-        activeToolName === 'Rectangle Tool') &&
+        activeToolName === 'Rectangle Tool' ||
+        activeToolName === 'Eraser Tool') &&
       color !== ''
         ? true
         : false;

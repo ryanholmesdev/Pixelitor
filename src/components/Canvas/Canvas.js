@@ -30,7 +30,6 @@ const Canvas = (props) => {
       startY = startPosition.startY;
     }
     setCanvasSettings(ctx);
-
     // Begin draw.
     ctx.beginPath();
     if (selectedTool === 'Pen Tool') {
@@ -46,11 +45,17 @@ const Canvas = (props) => {
       let height = startX - mouseX;
       let width = startY - mouseY;
       ctx.rect(mouseX, mouseY, width, height);
+    } else if (selectedTool === 'Eraser Tool') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.arc(startX, startY, brushSize, 0, Math.PI * 2, false);
+      ctx.fill();
     } else {
       console.error('Selected tool not available');
       return;
     }
     ctx.stroke();
+    // reset
+    ctx.globalCompositeOperation = 'source-over';
   };
 
   // Opacity is 0 - 100 need to format like 0.99
