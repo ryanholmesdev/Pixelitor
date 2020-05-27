@@ -28,7 +28,7 @@ export const ColorSettings = (props) => {
   return (
     <div>
       <ColorPicker
-        color={props.color}
+        color={props.color !== '' ? props.color : '#ffffff'}
         isVisible={isColorOptionVisable}
         hidePicker={() => setIsColorOptionVisable(false)}
         updateColor={props.updateColor}
@@ -37,7 +37,7 @@ export const ColorSettings = (props) => {
       <div className="color-section">
         <div className="active-color-container">
           <div
-            className="active-color"
+            className={`active-color ${props.color === '' ? 'no-active-color' : ''}`}
             style={{ backgroundColor: props.color }}
             onDoubleClick={() => setIsColorOptionVisable(true)}
           ></div>

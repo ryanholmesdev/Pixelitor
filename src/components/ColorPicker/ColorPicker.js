@@ -31,6 +31,10 @@ const ColorPicker = (props) => {
     }
   });
 
+  useEffect(() => {
+    setCurrentColor(props.color);
+  }, [props.color]);
+
   return (
     <div ref={popupRef} className={`pop-up ${props.isVisible ? '' : 'hide'}`}>
       <div className="close" onClick={props.hidePicker}>

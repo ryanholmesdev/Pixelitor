@@ -8,8 +8,8 @@
     width: 80%;
     height: 0;
     padding-bottom: 80%;
-    background-color: blue;
     cursor: pointer;
+
     .active-color-container {
       display: flex;
       align-items: center;
@@ -46,4 +46,17 @@
     margin-right: 5px;
     cursor: pointer;
   }
+}
+
+.no-active-color {
+  background: linear-gradient(
+      45deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0) 43%,
+      red 45%,
+      red 55%,
+      rgba(0, 0, 0, 0) 57%,
+      rgba(0, 0, 0, 0) 80%
+    ),
+    linear-gradient(135deg, #ffffff 0%, #ffffff 43%, red 45%, red 55%, #ffffff 57%, #ffffff 80%);
 }

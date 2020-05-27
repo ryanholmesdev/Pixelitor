@@ -110,12 +110,7 @@ const Canvas = (props) => {
       const overlayCtx = canvasOverlayEle.current.getContext('2d');
       overlayCtx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
     }
-
-    const imageData = canvasEle.current.toDataURL();
-    setMostRecentDrawData(imageData);
-    let newLayer = props.layer;
-    newLayer.latestData = imageData;
-    props.updateLayer(newLayer);
+    saveImageData(canvasEle);
   };
 
   const reDrawCanvasOnSizeChanges = (clearCanvasFirst) => {
@@ -129,6 +124,23 @@ const Canvas = (props) => {
         ctx.drawImage(image, 0, 0);
       };
       image.src = drawData;
+    }
+  };
+
+  const saveImageData = (canvasEle) => {
+    const imageData = canvasEle.current.toDataURL();
+    setMostRecentDrawData(imageData);
+    let newLayer = props.layer;
+    newLayer.latestData = imageData;
+    props.updateLayer(newLayer);
+  };
+
+  const onCanvasClick = (e) => {
+    if (selectedTool === 'Color fill Tool') {
+      const ctx = canvasEle.current.getContext('2d');
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, props.canvasWidth, props.canvasHeight);
+      saveImageData(canvasEle);
     }
   };
 
@@ -159,12 +171,14 @@ const Canvas = (props) => {
     <div>
       <canvas
         ref={canvasEle}
+        id={`layer-canvas-${props.layer.id}`}
         style={{ zIndex: `-${props.layer.order}` }}
         className={`${props.layer.name} ${props.layer.isVisible === false ? 'hide' : ''} ${
           props.layer.isSelected === false ? 'disable-pointer-events' : ''
         }`}
         width={props.canvasWidth}
         height={props.canvasHeight}
+        onClick={onCanvasClick}
         onMouseDown={props.allowedToDraw === true && requireCanvasOverlay === false ? onMouseDown : undefined}
         onMouseMove={isDrawing === true && requireCanvasOverlay === false ? onMouseMove : undefined}
         onMouseUp={isDrawing === true && requireCanvasOverlay === false ? onMouseUp : undefined}

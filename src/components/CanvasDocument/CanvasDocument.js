@@ -48,16 +48,17 @@ const CanvasDocument = (props) => {
 
   const setIsUserAllowedToDraw = () => {
     const isAllowed =
-      activeToolName === 'Pen Tool' ||
-      activeToolName === 'Line Tool' ||
-      activeToolName === 'Circle Tool' ||
-      activeToolName === 'Rectangle Tool'
+      (activeToolName === 'Pen Tool' ||
+        activeToolName === 'Line Tool' ||
+        activeToolName === 'Circle Tool' ||
+        activeToolName === 'Rectangle Tool') &&
+      color !== ''
         ? true
         : false;
     setIsAllowedToDraw(isAllowed);
   };
 
-  useEffect(setIsUserAllowedToDraw, [activeToolName]);
+  useEffect(setIsUserAllowedToDraw, [activeToolName, color]);
 
   const getMoveableBound = () => {
     const wrapper = pageWrapperEle.current;
@@ -73,12 +74,47 @@ const CanvasDocument = (props) => {
     dispatch(globalUpdateLayer(layer));
   };
 
+  const rgbToHex = (r, g, b) =>
+    '#' +
+    [r, g, b]
+      .map((x) => {
+        const hex = x.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      })
+      .join('');
+
+  const onEyePickerSelect = (e) => {
+    const rect = canvasWrapperEle.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const visableLayers = props.layers.filter((layer) => layer.isVisible === true);
+    let colorPicked = '';
+    for (const layer of visableLayers) {
+      if (layer.latestData) {
+        const canvas = document.getElementById(`layer-canvas-${layer.id}`);
+        const ctx = canvas.getContext('2d');
+        const pxData = ctx.getImageData(mouseX, mouseY, 1, 1);
+        let r, g, b;
+        [r, g, b] = pxData.data;
+        if (r !== 0 && g !== 0 && b !== 0) {
+          // found a color...
+          colorPicked = rgbToHex(r, g, b);
+          break;
+        }
+      }
+    }
+    let newSettings = settings;
+    newSettings.color = colorPicked;
+    dispatch(updateSettings(newSettings));
+  };
+
   return (
     <div className="page-wrapper" ref={pageWrapperEle}>
       <div
         ref={canvasWrapperEle}
         className={`canvas-wrapper ${isDraggingCanvas === true || isResizing === true ? 'active' : ''}`}
         style={{ width: `${canvasWidth}px`, height: `${canvasHeight}px`, left: `${canvasX}px`, top: `${canvasY}px` }}
+        onClick={activeToolName === 'Eyedropper Tool' ? onEyePickerSelect : undefined}
       >
         {props.layers.map((layer) => {
           return (
