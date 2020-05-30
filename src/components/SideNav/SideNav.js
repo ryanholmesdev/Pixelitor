@@ -1,5 +1,6 @@
 import React from 'react';
 import './SideNav.scss';
+import { FiSettings } from 'react-icons/fi';
 
 const SideNav = (props) => {
   const setActive = (tool) => {
@@ -16,6 +17,9 @@ const SideNav = (props) => {
           </div>
         );
       })}
+      <div className="settings">
+        <FiSettings color="788ca1" size="20px" style={{ margin: 'auto' }} />
+      </div>
     </div>
   );
 };

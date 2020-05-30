@@ -1,6 +1,6 @@
 import React from 'react';
 import './Navigation.scss';
-import { FiRotateCcw, FiRotateCw } from 'react-icons/fi';
+import { FiRotateCcw, FiRotateCw, FiUser } from 'react-icons/fi';
 import { connect, useSelector } from 'react-redux';
 import { saveAs } from 'file-saver';
 
@@ -38,6 +38,7 @@ const Navigation = (props) => {
   };
   return (
     <nav>
+      <div>hg</div>
       <div>
         <div className="icons">
           <div className="icon">
@@ -49,8 +50,15 @@ const Navigation = (props) => {
         </div>
       </div>
       <div>
-        <button onClick={onExportImageClick}>Export image</button>
-        <button>Login</button>
+        <div className="save-options">
+          <button className="button is-primary">Save</button>
+          <button className="button is-primary" onClick={onExportImageClick}>
+            Export image
+          </button>
+        </div>
+        <button className="profile">
+          <FiUser color="e3e3e3" size="30px" style={{ margin: 'auto' }} />
+        </button>
       </div>
     </nav>
   );

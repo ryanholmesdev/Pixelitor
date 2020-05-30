@@ -1,8 +1,8 @@
 @import '../node_modules/normalize.css/normalize.css';
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
 @import './scss/utilities/variables';
+@import './scss/bulma';
 @import './scss/inputRange/inputRange';
-
 .hide {
   display: none !important;
 }
@@ -43,4 +43,11 @@ input[type='number'] {
 
 .prevent-pointer * {
   pointer-events: none;
+}
+
+button {
+  background-color: $main-color;
+  &:hover {
+    text-decoration: underline;
+  }
 }
