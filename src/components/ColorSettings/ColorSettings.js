@@ -41,6 +41,9 @@ export const ColorSettings = (props) => {
             style={{ backgroundColor: props.color }}
             onDoubleClick={() => setIsColorOptionVisable(true)}
           ></div>
+          <span className="color-link" onClick={() => setIsColorOptionVisable(true)}>
+            {props.color}
+          </span>
         </div>
         <div className="color-satchets">
           {colors.map((color, index) => {

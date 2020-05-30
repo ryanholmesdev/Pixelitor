@@ -1,3 +1,5 @@
+@import '../../scss/utilities/variables';
+
 .color-section {
   display: grid !important;
   grid-template-columns: 1fr 4fr;
@@ -59,4 +61,13 @@
       rgba(0, 0, 0, 0) 80%
     ),
     linear-gradient(135deg, #ffffff 0%, #ffffff 43%, red 45%, red 55%, #ffffff 57%, #ffffff 80%);
+}
+.color-link {
+  position: relative;
+  cursor: pointer;
+  color: $main-color;
+  top: 5px;
+  &:hover {
+    text-decoration: underline;
+  }
 }
